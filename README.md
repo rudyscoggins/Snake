@@ -12,7 +12,8 @@ desktop and mobile devices.
 
 ### Controls
 
-- **Keyboard:** Use the arrow keys to move the snake.
+- **Keyboard:** Use the arrow keys to move the snake. After a game over you can
+  press any arrow key to restart immediately.
 - **Mobile:** Use the on-screen arrow buttons to change direction.
 
 ## Customization
