@@ -6,6 +6,7 @@ let direction = {x: 0, y: -1}; // start moving up
 let food = randomPosition();
 let gameOver = false;
 let speed = 200; // ms per frame
+const restartBtn = document.getElementById('restart');
 
 function randomPosition() {
     return {
@@ -27,7 +28,7 @@ function update() {
     // check for wall or self collision
     if (head.x < 0 || head.x >= canvas.width / gridSize || head.y < 0 || head.y >= canvas.height / gridSize || collision(head)) {
         gameOver = true;
-        alert('Game Over!');
+        restartBtn.style.display = 'block';
         return;
     }
 
@@ -59,6 +60,15 @@ function changeDirection(newDir) {
     direction = newDir;
 }
 
+function restartGame() {
+    snake = [{x: 9, y: 9}];
+    direction = {x: 0, y: -1};
+    food = randomPosition();
+    gameOver = false;
+    restartBtn.style.display = 'none';
+    draw();
+}
+
 // keyboard controls
 window.addEventListener('keydown', e => {
     switch (e.key) {
@@ -84,6 +94,8 @@ function setupControls() {
     document.getElementById('left').addEventListener('click', () => changeDirection({x:-1, y:0}));
     document.getElementById('right').addEventListener('click', () => changeDirection({x:1, y:0}));
 }
+
+restartBtn.addEventListener('click', restartGame);
 
 setupControls();
 setInterval(update, speed);
