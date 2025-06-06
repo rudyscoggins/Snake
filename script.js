@@ -11,6 +11,9 @@ const restartBtn = document.getElementById('restart');
 const foodImg = new Image();
 foodImg.src = "images/meatball.png";
 
+const onyxImg = new Image();
+onyxImg.src = "images/Onyx.png";
+
 function randomPosition() {
     return {
         x: Math.floor(Math.random() * (canvas.width / gridSize)),
@@ -52,7 +55,14 @@ function collision(pos) {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    snake.forEach(segment => drawCell(segment.x, segment.y, 'lime'));
+    snake.forEach(segment => {
+        if (onyxImg.complete) {
+            ctx.drawImage(onyxImg, segment.x * gridSize, segment.y * gridSize,
+                          gridSize - 1, gridSize - 1);
+        } else {
+            drawCell(segment.x, segment.y, 'lime');
+        }
+    });
     if (foodImg.complete) {
         ctx.drawImage(foodImg, food.x * gridSize, food.y * gridSize,
                       gridSize - 1, gridSize - 1);
