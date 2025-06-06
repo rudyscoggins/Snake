@@ -8,6 +8,9 @@ let gameOver = false;
 let speed = 200; // ms per frame
 const restartBtn = document.getElementById('restart');
 
+const foodImg = new Image();
+foodImg.src = "images/meatball.png";
+
 function randomPosition() {
     return {
         x: Math.floor(Math.random() * (canvas.width / gridSize)),
@@ -50,7 +53,12 @@ function collision(pos) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     snake.forEach(segment => drawCell(segment.x, segment.y, 'lime'));
-    drawCell(food.x, food.y, 'red');
+    if (foodImg.complete) {
+        ctx.drawImage(foodImg, food.x * gridSize, food.y * gridSize,
+                      gridSize - 1, gridSize - 1);
+    } else {
+        drawCell(food.x, food.y, 'red');
+    }
 }
 
 function changeDirection(newDir) {
