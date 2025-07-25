@@ -1,12 +1,27 @@
+/*
+ * Snake game logic for "Onyx eats meatballs".
+ *
+ * This script controls the rendering, movement and collision logic for the
+ * snake game. A simple improvement has been added: a score display
+ * appears at the top of the page and updates whenever the snake eats
+ * a meatball (food). The score is simply the length of the snake minus
+ * one, since the initial snake length is one segment.
+ */
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gridSize = 20; // 20x20 grid cells for 400x400 canvas
-let snake = [{x: 9, y: 9}];
-let direction = {x: 0, y: -1}; // start moving up
+const gridSize = gridsize;
+let snake = [{ x: 9, y: 9 }];
+let direction = { x: 0, y: -1 }; // start moving up
 let food = randomPosition();
 let gameOver = false;
 let speed = 200; // ms per frame
 const restartBtn = document.getElementById('restart');
+
+// Grab the score display element. If it doesn't exist the game still
+// runs normally.
+const scoreDisplay = document.getElementById('score');
 
 const foodImg = new Image();
 foodImg.src = "images/meatball.png";
@@ -26,13 +41,29 @@ function drawCell(x, y, color) {
     ctx.fillRect(x * gridSize, y * gridSize, gridSize - 1, gridSize - 1);
 }
 
+// Update the score display based on the current snake length. This
+// function uses a guard so that if the #score element isn't present,
+// nothing breaks.
+function updateScore() {
+    if (scoreDisplay) {
+        const score = snake.length - 1;
+        scoreDisplay.innerText = `Score: ${score}`;
+    }
+}
+
 function update() {
     if (gameOver) return;
 
-    const head = {x: snake[0].x + direction.x, y: snake[0].y + direction.y};
+    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
     // check for wall or self collision
-    if (head.x < 0 || head.x >= canvas.width / gridSize || head.y < 0 || head.y >= canvas.height / gridSize || collision(head)) {
+    if (
+        head.x < 0 ||
+        head.x >= canvas.width / gridSize ||
+        head.y < 0 ||
+        head.y >= canvas.height / gridSize ||
+        collision(head)
+    ) {
         gameOver = true;
         restartBtn.style.display = 'block';
         return;
@@ -46,6 +77,8 @@ function update() {
         snake.pop();
     }
 
+    // refresh the score after movement
+    updateScore();
     draw();
 }
 
@@ -57,33 +90,47 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     snake.forEach(segment => {
         if (onyxImg.complete) {
-            ctx.drawImage(onyxImg, segment.x * gridSize, segment.y * gridSize,
-                          gridSize - 1, gridSize - 1);
+            ctx.drawImage(
+                onyxImg,
+                segment.x * gridSize,
+                segment.y * gridSize,
+                gridSize - 1,
+                gridSize - 1
+            );
         } else {
             drawCell(segment.x, segment.y, 'lime');
         }
     });
     if (foodImg.complete) {
-        ctx.drawImage(foodImg, food.x * gridSize, food.y * gridSize,
-                      gridSize - 1, gridSize - 1);
+        ctx.drawImage(
+            foodImg,
+            food.x * gridSize,
+            food.y * gridSize,
+            gridSize - 1,
+            gridSize - 1
+        );
     } else {
         drawCell(food.x, food.y, 'red');
     }
 }
 
 function changeDirection(newDir) {
-    if (Math.abs(newDir.x) === Math.abs(direction.x) && Math.abs(newDir.y) === Math.abs(direction.y)) {
+    if (
+        Math.abs(newDir.x) === Math.abs(direction.x) &&
+        Math.abs(newDir.y) === Math.abs(direction.y)
+    ) {
         return; // prevent reversing
     }
     direction = newDir;
 }
 
 function restartGame() {
-    snake = [{x: 9, y: 9}];
-    direction = {x: 0, y: -1};
+    snake = [{ x: 9, y: 9 }];
+    direction = { x: 0, y: -1 };
     food = randomPosition();
     gameOver = false;
     restartBtn.style.display = 'none';
+    updateScore();
     draw();
 }
 
@@ -92,33 +139,35 @@ window.addEventListener('keydown', e => {
     switch (e.key) {
         case 'ArrowUp':
             if (gameOver) restartGame();
-            changeDirection({x:0, y:-1});
+            changeDirection({ x: 0, y: -1 });
             break;
         case 'ArrowDown':
             if (gameOver) restartGame();
-            changeDirection({x:0, y:1});
+            changeDirection({ x: 0, y: 1 });
             break;
         case 'ArrowLeft':
             if (gameOver) restartGame();
-            changeDirection({x:-1, y:0});
+            changeDirection({ x: -1, y: 0 });
             break;
         case 'ArrowRight':
             if (gameOver) restartGame();
-            changeDirection({x:1, y:0});
+            changeDirection({ x: 1, y: 0 });
             break;
     }
 });
 
 // touch controls via buttons
 function setupControls() {
-    document.getElementById('up').addEventListener('click', () => changeDirection({x:0, y:-1}));
-    document.getElementById('down').addEventListener('click', () => changeDirection({x:0, y:1}));
-    document.getElementById('left').addEventListener('click', () => changeDirection({x:-1, y:0}));
-    document.getElementById('right').addEventListener('click', () => changeDirection({x:1, y:0}));
+    document.getElementById('up').addEventListener('click', () => changeDirection({ x: 0, y: -1 }));
+    document.getElementById('down').addEventListener('click', () => changeDirection({ x: 0, y: 1 }));
+    document.getElementById('left').addEventListener('click', () => changeDirection({ x: -1, y: 0 }));
+    document.getElementById('right').addEventListener('click', () => changeDirection({ x: 1, y: 0 }));
 }
 
 restartBtn.addEventListener('click', restartGame);
 
 setupControls();
+// call updateScore once at startup so the score starts at zero
+updateScore();
 setInterval(update, speed);
 draw();
