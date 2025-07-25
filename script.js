@@ -11,6 +11,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gridSize = 20; // 20x20 grid cells for 400x400 canvas
+const gridSize = gridsize;
 let snake = [{ x: 9, y: 9 }];
 let direction = { x: 0, y: -1 }; // start moving up
 let food = randomPosition();
